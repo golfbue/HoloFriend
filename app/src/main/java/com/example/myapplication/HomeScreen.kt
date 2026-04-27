@@ -351,21 +351,30 @@ fun UpcomingHorizontalCard(video: HolodexVideo) {
 
 @Composable
 fun NewsBannerCard() {
+    val context = LocalContext.current
     Card(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = PrimaryBlue),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://hololivepro.com/news_en/"))
+                context.startActivity(intent)
+            }
     ) {
         Row(
             modifier = Modifier.padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Special Event", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
-                Text("Hololive 5th Fes. Bloom!", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text("Hololive News", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+                Text("Official News & Updates", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
-                    onClick = { /* TODO */ },
+                    onClick = { 
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://hololivepro.com/news_en/"))
+                        context.startActivity(intent)
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                     modifier = Modifier.height(32.dp)
@@ -373,7 +382,7 @@ fun NewsBannerCard() {
                     Text("Read More", color = PrimaryBlue, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
-            Text("🌸", fontSize = 48.sp)
+            Text("🌐", fontSize = 48.sp)
         }
     }
 }
