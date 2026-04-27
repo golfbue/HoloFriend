@@ -15,7 +15,7 @@ class LiveNotificationWorker(
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
 
-    private val api = HolodexApi.create()
+    private val api = HolodexApi.create(BuildConfig.HOLODEX_API_KEY)
     private val sharedPrefs = appContext.getSharedPreferences("holo_fan_prefs", Context.MODE_PRIVATE)
 
     override suspend fun doWork(): Result {
@@ -54,6 +54,18 @@ class LiveNotificationWorker(
             .setContentText(video.title)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
+
+        // Save to history
+        val history = sharedPrefs.getStringSet("notification_history", emptySet())?.toMutableSet() ?: mutableSetOf()
+        val timestamp = System.currentTimeMillis()
+        val historyEntry = "${video.id}|${video.channel.name}|${video.title}|$timestamp"
+        history.add(historyEntry)
+        
+        // Keep only latest 20
+        val sortedHistory = history.sortedByDescending { it.split("|").last().toLongOrNull() ?: 0L }
+        val limitedHistory = sortedHistory.take(20).toSet()
+        
+        sharedPrefs.edit().putStringSet("notification_history", limitedHistory).apply()
 
         with(NotificationManagerCompat.from(applicationContext)) {
             try {

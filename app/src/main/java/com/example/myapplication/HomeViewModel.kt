@@ -8,26 +8,30 @@ import kotlinx.coroutines.launch
 
 sealed class HomeUiState {
     object Loading : HomeUiState()
-    data class Success(val liveStreams: List<HolodexVideo>) : HomeUiState()
+    data class Success(
+        val liveStreams: List<HolodexVideo>,
+        val upcomingStreams: List<HolodexVideo>
+    ) : HomeUiState()
     data class Error(val message: String) : HomeUiState()
 }
 
 class HomeViewModel : ViewModel() {
-    private val api = HolodexApi.create()
+    private val api = HolodexApi.create(BuildConfig.HOLODEX_API_KEY)
     
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState
 
     init {
-        refreshLiveStreams()
+        refreshData()
     }
 
-    fun refreshLiveStreams() {
+    fun refreshData() {
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
             try {
-                val streams = api.getLiveStreams()
-                _uiState.value = HomeUiState.Success(streams)
+                val live = api.getLiveStreams()
+                val upcoming = api.getVideos(status = "upcoming", limit = 10)
+                _uiState.value = HomeUiState.Success(live, upcoming)
             } catch (e: Exception) {
                 _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
             }

@@ -19,7 +19,8 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun MerchStoreScreen() {
-    Column(modifier = Modifier.fillMaxSize().background(BackgroundLightBlue)) {
+    val strings = LocalStrings.current
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         // Header
         Row(
             modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
@@ -29,12 +30,12 @@ fun MerchStoreScreen() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.PlayArrow, contentDescription = "Logo", tint = PrimaryBlue)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("สินค้า & อีเวนต์", fontWeight = FontWeight.ExtraBold, color = PrimaryBlue, fontSize = 20.sp)
+                Text(strings.merch, fontWeight = FontWeight.ExtraBold, color = PrimaryBlue, fontSize = 20.sp)
             }
             Icon(Icons.Default.Notifications, contentDescription = "Bell", tint = PrimaryBlue)
         }
 
-        Text("สินค้าล่าสุด", fontWeight = FontWeight.Bold, color = PrimaryBlue, fontSize = 18.sp, modifier = Modifier.padding(horizontal = 16.dp))
+        Text(strings.merch, fontWeight = FontWeight.Bold, color = PrimaryBlue, fontSize = 18.sp, modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.height(8.dp))
 
         // List
@@ -49,13 +50,13 @@ fun MerchStoreScreen() {
 fun MerchItemCard(title: String, openDate: String, endDate: String) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = CardWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Box(modifier = Modifier.height(120.dp).fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(Color.LightGray))
             Spacer(modifier = Modifier.height(12.dp))
-            Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextDark)
+            Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
             Spacer(modifier = Modifier.height(4.dp))
             Text("เปิดรับ: $openDate", fontSize = 14.sp, color = TextLight)
             Text("ถึง: $endDate", fontSize = 14.sp, color = TextLight)

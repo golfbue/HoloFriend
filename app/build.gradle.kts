@@ -27,8 +27,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
         // Expose API Key to BuildConfig
-        val apiKey = localProperties.getProperty("YOUTUBE_API_KEY", "")
-        buildConfigField("String", "YOUTUBE_API_KEY", "\"$apiKey\"")
+        val apiKey = localProperties.getProperty("HOLODEX_API_KEY", "")
+        buildConfigField("String", "HOLODEX_API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {

@@ -1,21 +1,25 @@
 package com.example.myapplication
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow // เพิ่ม Import นี้เพื่อแก้บัค LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,22 +31,32 @@ import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 
+
+
 @Composable
 fun TalentProfileScreen() {
-    var selectedTalent by remember { mutableStateOf<Talent?>(null) }
-
-    if (selectedTalent == null) {
-        TalentListScreen(onTalentClick = { selectedTalent = it })
-    } else {
-        TalentDetailScreen(talent = selectedTalent!!, onBack = { selectedTalent = null })
-    }
+    val uriHandler = LocalUriHandler.current
+    
+    TalentListScreen(onTalentClick = { talent ->
+        // Construct the official Hololive profile URL
+        // Pattern: https://hololive.hololivepro.com/en/talents/{slug}/
+        val slug = talent.name.lowercase()
+            .replace(" ", "-")
+            .replace("+", "plus")
+            .replace("'", "")
+            .replace(".", "")
+        
+        val url = "https://hololive.hololivepro.com/en/talents/$slug/"
+        uriHandler.openUri(url)
+    })
 }
 
 @Composable
 fun TalentListScreen(onTalentClick: (Talent) -> Unit) {
     val allTalents = TalentProvider.talents
+    val strings = LocalStrings.current
     val categories = listOf(
-        "ALL", "Gen 0", "Gen 1", "Gen 2", "GAMERS", "Gen 3", "Gen 4", "Gen 5", "HoloX", 
+        "ALL", "Gen 0", "Gen 1", "Gen 2", "GAMERS", "Gen 3", "Gen 4", "Gen 5", "HoloX",
         "Indonesia", "English", "Myth", "Promise", "Advent", "Justice", "ReGLOSS", "FLOW GLOW", "holoAN", "Alum", "Staff"
     )
     var selectedCategory by remember { mutableStateOf("ALL") }
@@ -56,13 +70,17 @@ fun TalentListScreen(onTalentClick: (Talent) -> Unit) {
                 when (selectedCategory) {
                     "Indonesia" -> talent.generation.contains("ID", ignoreCase = true)
                     "English" -> talent.generation.contains("EN", ignoreCase = true)
+                    "Myth" -> talent.generation.contains("Myth", ignoreCase = true)
+                    "Promise" -> talent.generation.contains("Promise", ignoreCase = true) || talent.generation.contains("Project HOPE", ignoreCase = true)
+                    "Advent" -> talent.generation.contains("Advent", ignoreCase = true)
+                    "Justice" -> talent.generation.contains("Justice", ignoreCase = true)
                     "Alum" -> talent.status == "Alum"
                     "Staff" -> talent.status == "Affiliate" || talent.generation.contains("Staff")
                     else -> talent.generation.contains(selectedCategory, ignoreCase = true)
                 }
             }
         }
-        
+
         if (searchQuery.isBlank()) {
             categoryFiltered
         } else {
@@ -70,7 +88,7 @@ fun TalentListScreen(onTalentClick: (Talent) -> Unit) {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(BackgroundLightBlue)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         // Header
         Row(
             modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp),
@@ -78,24 +96,31 @@ fun TalentListScreen(onTalentClick: (Talent) -> Unit) {
         ) {
             Icon(Icons.Default.PlayArrow, contentDescription = "Logo", tint = PrimaryBlue)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("TALENT", fontWeight = FontWeight.ExtraBold, color = PrimaryBlue, fontSize = 24.sp)
+            Text(strings.talents.uppercase(), fontWeight = FontWeight.ExtraBold, color = PrimaryBlue, fontSize = 24.sp)
         }
 
-        // Search Bar
+        // Search Bar (Functional)
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            placeholder = { Text("ค้นหาโอชิของคุณ...") },
+            placeholder = { Text(strings.searchOshi) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = PrimaryBlue) },
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { searchQuery = "" }) {
+                        Icon(Icons.Default.Close, contentDescription = "Clear", tint = Color.Gray)
+                    }
+                }
+            },
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = PrimaryBlue.copy(alpha = 0.3f),
                 focusedBorderColor = PrimaryBlue,
-                unfocusedContainerColor = CardWhite,
-                focusedContainerColor = CardWhite
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedContainerColor = MaterialTheme.colorScheme.surface
             ),
             singleLine = true
         )
@@ -131,7 +156,7 @@ fun TalentListScreen(onTalentClick: (Talent) -> Unit) {
 fun FilterChip(label: String, isSelected: Boolean, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
-        color = if (isSelected) PrimaryBlue else CardWhite,
+        color = if (isSelected) PrimaryBlue else MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(8.dp),
         border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, PrimaryBlue.copy(alpha = 0.3f)),
         modifier = Modifier.height(36.dp)
@@ -151,7 +176,7 @@ fun FilterChip(label: String, isSelected: Boolean, onClick: () -> Unit) {
 fun TalentListItem(talent: Talent, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = CardWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -174,14 +199,14 @@ fun TalentListItem(talent: Talent, onClick: () -> Unit) {
                     fontSize = 32.sp
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = talent.name,
                     fontWeight = FontWeight.ExtraBold,
-                    color = TextDark,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp
                 )
                 Text(
@@ -191,7 +216,7 @@ fun TalentListItem(talent: Talent, onClick: () -> Unit) {
                     fontWeight = FontWeight.Medium
                 )
             }
-            
+
             Column(horizontalAlignment = Alignment.End) {
                 StatusBadge(status = talent.status)
             }
@@ -219,82 +244,5 @@ fun StatusBadge(status: String) {
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
         )
-    }
-}
-
-@Composable
-fun TalentDetailScreen(talent: Talent, onBack: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(BackgroundLightBlue)
-            .verticalScroll(rememberScrollState())
-    ) {
-        // Header with Back Button
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = PrimaryBlue)
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("รายละเอียดเมมเบอร์", fontWeight = FontWeight.ExtraBold, color = PrimaryBlue, fontSize = 20.sp)
-        }
-
-        // Talent Oshi Header
-        Box(
-            modifier = Modifier.fillMaxWidth().height(200.dp).background(PrimaryBlue.copy(alpha = 0.1f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(150.dp)
-                    .clip(CircleShape)
-                    .background(Color.White),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = talent.oshiMark,
-                    fontSize = 80.sp
-                )
-            }
-        }
-        
-        // Info Card
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = CardWhite),
-            modifier = Modifier.fillMaxWidth().padding(16.dp).offset(y = (-30).dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(talent.name, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = TextDark)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    StatusBadge(status = talent.status)
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("รุ่น : ${talent.generation}", fontSize = 14.sp, color = TextMainBlue)
-                Text("วันเดบิวต์ : ${talent.debutDate}", fontSize = 14.sp, color = TextMainBlue)
-                Text("อิโมจิ : ${talent.oshiMark}", fontSize = 14.sp, color = TextMainBlue)
-                
-                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = BackgroundLightBlue)
-                
-                Text(talent.bio, color = TextDark, fontSize = 14.sp)
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                val uriHandler = LocalUriHandler.current
-                Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-                    Button(
-                        onClick = { uriHandler.openUri("https://www.youtube.com/channel/${talent.youtubeChannelId}") },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF0000))
-                    ) { Text("YouTube") }
-                    Button(
-                        onClick = { uriHandler.openUri("https://twitter.com/${talent.twitter.removePrefix("@")}") },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1DA1F2))
-                    ) { Text(talent.twitter) }
-                }
-            }
-        }
     }
 }

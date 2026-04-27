@@ -9,10 +9,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import android.content.Intent
 import android.net.Uri
+import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 
 import android.Manifest
@@ -39,9 +41,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
-        // Load Talents from Assets
-        TalentProvider.loadTalents(this)
         
         // Initialize Notification Channel
         LiveNotificationWorker.createNotificationChannel(this)
@@ -87,60 +86,94 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     var selectedTab by remember { mutableStateOf(0) }
+    var showNotificationHistory by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val sharedPrefs = remember { context.getSharedPreferences("holo_fan_prefs", Context.MODE_PRIVATE) }
     
-    Scaffold(
-        bottomBar = {
-            NavigationBar(containerColor = CardWhite) {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "หน้าหลัก") },
-                    label = { Text("หน้าหลัก") },
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    colors = NavigationBarItemDefaults.colors(indicatorColor = BackgroundLightBlue, selectedIconColor = PrimaryBlue, selectedTextColor = PrimaryBlue)
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.DateRange, contentDescription = "ตารางไลฟ์") },
-                    label = { Text("ตารางไลฟ์") },
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    colors = NavigationBarItemDefaults.colors(indicatorColor = BackgroundLightBlue, selectedIconColor = PrimaryBlue, selectedTextColor = PrimaryBlue)
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = "ข้อมูลเมม") },
-                    label = { Text("ข้อมูลเมม") },
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
-                    colors = NavigationBarItemDefaults.colors(indicatorColor = BackgroundLightBlue, selectedIconColor = PrimaryBlue, selectedTextColor = PrimaryBlue)
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.ShoppingCart, contentDescription = "สินค้า") },
-                    label = { Text("สินค้า") },
-                    selected = selectedTab == 3,
-                    onClick = { 
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://shop.hololivepro.com/"))
-                        context.startActivity(intent)
-                    },
-                    colors = NavigationBarItemDefaults.colors(indicatorColor = BackgroundLightBlue, selectedIconColor = PrimaryBlue, selectedTextColor = PrimaryBlue)
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "ตั้งค่า") },
-                    label = { Text("ตั้งค่า") },
-                    selected = selectedTab == 4,
-                    onClick = { selectedTab = 4 },
-                    colors = NavigationBarItemDefaults.colors(indicatorColor = BackgroundLightBlue, selectedIconColor = PrimaryBlue, selectedTextColor = PrimaryBlue)
-                )
-            }
-        }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            when (selectedTab) {
-                0 -> HomeScreen()
-                1 -> ScheduleScreen()
-                2 -> TalentProfileScreen()
-                3 -> MerchStoreScreen()
-                4 -> SettingsScreen()
+    var isDarkMode by remember { 
+        mutableStateOf(sharedPrefs.getBoolean("dark_mode_enabled", false)) 
+    }
+
+    var appLanguage by remember {
+        mutableStateOf(sharedPrefs.getString("app_language", "ภาษาไทย") ?: "ภาษาไทย")
+    }
+
+    val strings = if (appLanguage == "English") EnglishStrings else ThaiStrings
+    
+    CompositionLocalProvider(LocalStrings provides strings) {
+        MyApplicationTheme(darkTheme = isDarkMode) {
+            if (showNotificationHistory) {
+                NotificationHistoryScreen(onBack = { showNotificationHistory = false })
+            } else {
+                Scaffold(
+                    bottomBar = {
+                        NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+                            NavigationBarItem(
+                                icon = { Icon(Icons.Default.Home, contentDescription = strings.home) },
+                                label = { Text(strings.home) },
+                                selected = selectedTab == 0,
+                                onClick = { selectedTab = 0 },
+                                colors = NavigationBarItemDefaults.colors(indicatorColor = BackgroundLightBlue, selectedIconColor = PrimaryBlue, selectedTextColor = PrimaryBlue)
+                            )
+                            NavigationBarItem(
+                                icon = { Icon(Icons.Default.DateRange, contentDescription = strings.schedule) },
+                                label = { Text(strings.schedule) },
+                                selected = selectedTab == 1,
+                                onClick = { selectedTab = 1 },
+                                colors = NavigationBarItemDefaults.colors(indicatorColor = BackgroundLightBlue, selectedIconColor = PrimaryBlue, selectedTextColor = PrimaryBlue)
+                            )
+                            NavigationBarItem(
+                                icon = { Icon(Icons.Default.Person, contentDescription = strings.talents) },
+                                label = { Text(strings.talents) },
+                                selected = false,
+                                onClick = { 
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://hololive.hololivepro.com/en/talents"))
+                                    context.startActivity(intent)
+                                },
+                                colors = NavigationBarItemDefaults.colors(indicatorColor = BackgroundLightBlue, selectedIconColor = PrimaryBlue, selectedTextColor = PrimaryBlue)
+                            )
+                            NavigationBarItem(
+                                icon = { Icon(Icons.Default.ShoppingCart, contentDescription = strings.merch) },
+                                label = { Text(strings.merch) },
+                                selected = false,
+                                onClick = { 
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://shop.hololivepro.com/"))
+                                    context.startActivity(intent)
+                                },
+                                colors = NavigationBarItemDefaults.colors(indicatorColor = BackgroundLightBlue, selectedIconColor = PrimaryBlue, selectedTextColor = PrimaryBlue)
+                            )
+                            NavigationBarItem(
+                                icon = { Icon(Icons.Default.Settings, contentDescription = strings.settings) },
+                                label = { Text(strings.settings) },
+                                selected = selectedTab == 4,
+                                onClick = { selectedTab = 4 },
+                                colors = NavigationBarItemDefaults.colors(indicatorColor = BackgroundLightBlue, selectedIconColor = PrimaryBlue, selectedTextColor = PrimaryBlue)
+                            )
+                        }
+                    }
+                ) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        when (selectedTab) {
+                            0 -> HomeScreen()
+                            1 -> ScheduleScreen(onNotificationClick = { showNotificationHistory = true })
+                            4 -> SettingsScreen(
+                                onDarkModeToggle = { isDarkMode = it },
+                                onLanguageToggle = { appLanguage = it },
+                                onNotificationToggle = { enabled ->
+                                    if (enabled) {
+                                        val workRequest = PeriodicWorkRequestBuilder<LiveNotificationWorker>(15, TimeUnit.MINUTES).build()
+                                        WorkManager.getInstance(context).enqueueUniquePeriodicWork("LiveNotificationWork", ExistingPeriodicWorkPolicy.KEEP, workRequest)
+                                    } else {
+                                        WorkManager.getInstance(context).cancelUniqueWork("LiveNotificationWork")
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 }
+
+
