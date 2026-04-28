@@ -60,7 +60,7 @@ fun ScheduleScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.PlayArrow, contentDescription = "Logo", tint = PrimaryBlue)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Holo Fan Companion", fontWeight = FontWeight.ExtraBold, color = PrimaryBlue, fontSize = 20.sp)
+                Text("HoloFriend Companion", fontWeight = FontWeight.ExtraBold, color = PrimaryBlue, fontSize = 20.sp)
             }
             Row {
                 IconButton(onClick = { viewModel.refreshSchedule() }) {
@@ -291,41 +291,22 @@ fun ScheduleScreen(
                             if (filteredLive.isNotEmpty()) {
                                 item {
                                     SectionHeader(strings.liveNow.uppercase() + " (LIVE NOW)")
-                                    if (filteredLive.size == 1) {
-                                        val stream = filteredLive[0]
-                                        ScheduleItemCard(
-                                            time = "LIVE",
-                                            channel = stream.channel.name,
-                                            title = stream.title,
-                                            isLive = true,
-                                            type = stream.type,
-                                            topic = stream.topic_id,
-                                            videoId = stream.id,
-                                            channelPhoto = stream.channel.photo,
-                                            onClick = { uriHandler.openUri("https://www.youtube.com/watch?v=${stream.id}") }
-                                        )
-                                    } else {
-                                        LazyRow(
-                                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-                                        ) {
-                                            items(filteredLive.size) { index ->
-                                                val stream = filteredLive[index]
-                                                ScheduleItemCard(
-                                                    time = "LIVE",
-                                                    channel = stream.channel.name,
-                                                    title = stream.title,
-                                                    isLive = true,
-                                                    type = stream.type,
-                                                    topic = stream.topic_id,
-                                                    videoId = stream.id,
-                                                    channelPhoto = stream.channel.photo,
-                                                    modifier = Modifier.width(360.dp),
-                                                    onClick = { uriHandler.openUri("https://www.youtube.com/watch?v=${stream.id}") }
-                                                )
-                                            }
-                                        }
-                                    }
+                                }
+                                items(filteredLive.size) { index ->
+                                    val stream = filteredLive[index]
+                                    ScheduleItemCard(
+                                        time = "LIVE",
+                                        channel = stream.channel.name,
+                                        title = stream.title,
+                                        isLive = true,
+                                        type = stream.type,
+                                        topic = stream.topic_id,
+                                        videoId = stream.id,
+                                        channelPhoto = stream.channel.photo,
+                                        onClick = { uriHandler.openUri("https://www.youtube.com/watch?v=${stream.id}") }
+                                    )
+                                }
+                                item {
                                     Spacer(modifier = Modifier.height(16.dp))
                                 }
                             }

@@ -88,7 +88,7 @@ fun MainScreen() {
     var selectedTab by remember { mutableStateOf(0) }
     var showNotificationHistory by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val sharedPrefs = remember { context.getSharedPreferences("holo_fan_prefs", Context.MODE_PRIVATE) }
+    val sharedPrefs = remember { context.getSharedPreferences("holofriend_prefs", Context.MODE_PRIVATE) }
     
     var isDarkMode by remember { 
         mutableStateOf(sharedPrefs.getBoolean("dark_mode_enabled", false)) 

@@ -50,7 +50,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             item {
                 Column(modifier = Modifier.padding(16.dp).padding(top = 24.dp)) {
                     Text(
-                        "Hello, Holo-Fan! 👋",
+                        "Hello, HoloFriend! 👋",
                         fontSize = 14.sp,
                         color = TextLight,
                         fontWeight = FontWeight.Medium
