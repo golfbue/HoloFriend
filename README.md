@@ -24,6 +24,13 @@
 
 แอปพลิเคชันเลือกใช้โทนสี **Primary Blue (#2196F3)** ซึ่งเป็นสีเอกลักษณ์ของ Hololive ผสมผสานกับดีไซน์แบบ Glassmorphism และการใช้ขอบมน (Rounded Corners) เพื่อให้ความรู้สึกที่เป็นมิตรและทันสมัย
 
+---
+
+### 📖 เอกสารโครงการ (Documentation)
+- [Project Report & Wireframes](docs/Project_Report.md) - รายละเอียดโครงสร้างแอป, Wireframes และ UI Mockup
+
+---
+
 ## 🚀 เริ่มต้นใช้งาน (Getting Started)
 
 1. Clone โปรเจกต์นี้ลงในเครื่อง
