@@ -1,8 +1,8 @@
-# HoloFriend 💙
+# HoloFriend 
 
 **HoloFriend** คือแอปพลิเคชันสำหรับแฟนคลับ Hololive ที่สร้างขึ้นด้วย Jetpack Compose โดยเน้นความสวยงาม ทันสมัย และ **"ความถูกต้องของเนื้อหา"** เป็นสำคัญ เพื่อให้คุณไม่พลาดทุกความเคลื่อนไหวจากสมาชิก Hololive ตัวจริง
 
-## ✨ ฟีเจอร์หลัก (Key Features)
+##  ฟีเจอร์หลัก (Key Features)
 
 - **Official Content Only**: ระบบคัดกรองอัจฉริยะที่คัดเลือกเฉพาะเนื้อหาจากสมาชิก Hololive และ DEV_IS (ReGLOSS, FLOW GLOW) ตัวจริงเท่านั้น โดยทำการกรอง Clipper และช่องแฟนคลับออก 100%
 - **Live & Archive Streams**: ติดตามไลฟ์ที่กำลังฉายอยู่และไลฟ์ย้อนหลังได้ทันทีจากหน้า Home
@@ -11,7 +11,7 @@
 - **Official Shop Integration**: เข้าถึงร้านค้าทางการ (Hololive Official Shop) ได้อย่างรวดเร็วผ่านหน้า Merch Store
 - **Premium Design**: อินเตอร์เฟซแบบ Dark Mode ที่ดูพรีเมียม พร้อมไอคอนแบบ Vector ที่คมชัดในทุกความละเอียด
 
-## 🛠️ เทคโนโลยีที่ใช้ (Tech Stack)
+##  เทคโนโลยีที่ใช้ (Tech Stack)
 
 - **Language**: Kotlin
 - **UI Framework**: Jetpack Compose
@@ -20,22 +20,22 @@
 - **Data Source**: Holodex API (v2)
 - **Architecture**: MVVM (Model-View-ViewModel)
 
-## 🎨 การออกแบบ (Design Identity)
+##  การออกแบบ (Design Identity)
 
 แอปพลิเคชันเลือกใช้โทนสี **Primary Blue (#2196F3)** ซึ่งเป็นสีเอกลักษณ์ของ Hololive ผสมผสานกับดีไซน์แบบ Glassmorphism และการใช้ขอบมน (Rounded Corners) เพื่อให้ความรู้สึกที่เป็นมิตรและทันสมัย
 
 ---
 
-### 📖 เอกสารโครงการ (Documentation)
+###  เอกสารโครงการ (Documentation)
 - [Project Report & Wireframes](docs/Project_Report.md) - รายละเอียดโครงสร้างแอป, Wireframes และ UI Mockup
 
 ---
 
-## 🚀 เริ่มต้นใช้งาน (Getting Started)
+##  เริ่มต้นใช้งาน (Getting Started)
 
 1. Clone โปรเจกต์นี้ลงในเครื่อง
 2. ตรวจสอบให้มั่นใจว่ามี `HOLODEX_API_KEY` ใน `BuildConfig`
 3. Build และรันแอปผ่าน Android Studio
 
 ---
-*Created with ❤️ by Antigravity AI & The Hololive Fan Community*
+*Created with  by Antigravity AI & The Hololive Fan Community*
